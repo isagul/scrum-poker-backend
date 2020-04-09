@@ -108,7 +108,7 @@ exports.vote_story = (req, res, next) => {
     const { session_name, voter_name, story_name, story_point } = req.body;
     Session.findOneAndUpdate(
         { name: session_name }, 
-        { "$set" : { "stories.$[story].voters.$[voter].point": story_point} },
+        { "$set" : { "stories.$[story].voters.$[voter].point": story_point, 'stories.$[story].voters.$[voter].status': 'Voted'} },
         { "arrayFilters": [{"story.description" : story_name}, {"voter.name": voter_name}], new: true},
         (err, doc) => {
             if (err) {
