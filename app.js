@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 
 const sessionRoutes = require('./api/routers/session');
+const storyRoutes = require('./api/routers/story');
 
 const url = `mongodb+srv://isa:${process.env.MONGO_PASS}@scrum-poker-smfdk.mongodb.net/test?retryWrites=true&w=majority`;
 
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/session', sessionRoutes);
+app.use('/story', storyRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not Found');
