@@ -14,7 +14,7 @@ exports.create_session = (req, res, next) => {
                 })
             } else {
                 const { stories, voters_number } = req.body;
-                let seperatedStories = stories.split('\n');                
+                let seperatedStories = stories.split('\n');
 
                 let votersArray = [
                     { name: 'Scrum Master', point: '', status: 'Not Voted' }
@@ -28,19 +28,16 @@ exports.create_session = (req, res, next) => {
                     votersArray.push(newVoter);
                 }
 
-                let sessionStory = seperatedStories.map(item => {
+                let sessionStory = seperatedStories.map((item, index) => {
                     let newObj = {};
-                    /*const story = new Story({
-                        _id: mongoose.Types.ObjectId(),
-                        description: item,
-                        point: '',
-                        status: 'Not Voted',
-                        voters: votersArray
-                    })*/
                     newObj["_id"] = mongoose.Types.ObjectId();
                     newObj["description"] = item;
                     newObj["point"] = "";
-                    newObj["status"] = "Not Voted";
+                    if (index === 0) {
+                        newObj["status"] = "Active";
+                    } else {
+                        newObj["status"] = "Not Voted";
+                    }
                     newObj["voters"] = votersArray;
                     return newObj;
                 });
@@ -104,12 +101,12 @@ exports.get_session_info = (req, res, next) => {
         })
 }
 
-exports.vote_story = (req, res, next) => {
-    const { session_name, voter_name, story_name, story_point } = req.body;
+exports.update_next_story_status = (req, res, next) => {
+    const { session_name, story_name } = req.body;
     Session.findOneAndUpdate(
-        { name: session_name }, 
-        { "$set" : { "stories.$[story].voters.$[voter].point": story_point, 'stories.$[story].voters.$[voter].status': 'Voted'} },
-        { "arrayFilters": [{"story.description" : story_name}, {"voter.name": voter_name}], new: true},
+        {name: session_name},
+        { "$set" : { 'stories.$[story].status': 'Active'} },
+        { "arrayFilters": [{"story.description" : story_name}], new: true},
         (err, doc) => {
             if (err) {
                 res.status(200).json({
@@ -119,14 +116,13 @@ exports.vote_story = (req, res, next) => {
             }        
             res.status(200).json({
               status: true,
-              message: 'Story updated successfully',
+              message: 'Story status updated successfully',
               session: doc
             })
         }
     )
-}
 
-// { "arrayFilters": [{"story.description" : story_name}, {"voter.name": voter_name}], new: true},
+}
 
 exports.get_all_session = (req, res, next) => {
     Session.find()

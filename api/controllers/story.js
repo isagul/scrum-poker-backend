@@ -25,22 +25,26 @@ exports.vote_story = (req, res, next) => {
     )
 }
 
-
-exports.get_stories = (req, res, next) => {
-    Story.find()
-        .exec()
-        .then(result => {
+exports.vote_story_final_score = (req, res, next) => {
+    const { session_name, story_name, story_point } = req.body;
+    Session.findOneAndUpdate(
+        {name: session_name},
+        { "$set" : { "stories.$[story].point": story_point, 'stories.$[story].status': 'Voted'} },
+        { "arrayFilters": [{"story.description" : story_name}], new: true},
+        (err, doc) => {
+            if (err) {
+                res.status(200).json({
+                  status: false,
+                  message: 'Something went wrong!'
+                })
+            }        
             res.status(200).json({
-                status: true,
-                result
+              status: true,
+              message: 'Story final score updated successfully',
+              session: doc
             })
-        })
-        .catch(err => {
-            res.status(200).json({
-                status: false,
-                error: err
-            })
-        })
+        }
+    )
 }
 
 exports.get_story = (req, res, next) => {
@@ -52,6 +56,23 @@ exports.get_story = (req, res, next) => {
             res.status(200).json({
                 status: true,
                 story: result.stories[0]
+            })
+        })
+        .catch(err => {
+            res.status(200).json({
+                status: false,
+                error: err
+            })
+        })
+}
+
+exports.get_stories = (req, res, next) => {
+    Story.find()
+        .exec()
+        .then(result => {
+            res.status(200).json({
+                status: true,
+                result
             })
         })
         .catch(err => {
