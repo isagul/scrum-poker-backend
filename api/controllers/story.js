@@ -47,6 +47,35 @@ exports.vote_story_final_score = (req, res, next) => {
     )
 }
 
+exports.get_active_story = (req, res, next) => {
+    const {session_name} = req.body;
+
+    Session.findOne({name: session_name}).select({'stories': {$elemMatch: {status: 'Active'}}})
+        .exec()
+        .then(result => {
+            if (result.stories) {
+                res.status(200).json({
+                    status: true,
+                    story: result.stories[0]
+                })
+            } else {
+                res.status(200).json({
+                    status: true,
+                    story: {
+                        voters: []
+                    }
+                })
+            }
+            
+        })
+        .catch(err => {
+            res.status(200).json({
+                status: false,
+                error: err
+            })
+        })
+}
+
 exports.get_story = (req, res, next) => {
     const {story_name, session_name} = req.body;
 

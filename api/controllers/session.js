@@ -73,7 +73,7 @@ exports.create_session = (req, res, next) => {
 }
 
 exports.get_session_info = (req, res, next) => {
-    Session.findOne({ name: req.body.name })
+    Session.findOne({ name: req.body.session_name })
         .exec()
         .then(result => {
             if (!result) {
