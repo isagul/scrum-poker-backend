@@ -8,7 +8,7 @@ const app = express();
 const sessionRoutes = require('./api/routers/session');
 const storyRoutes = require('./api/routers/story');
 
-const url = `mongodb+srv://isa:${process.env.MONGO_PASS}@scrum-poker.smfdk.mongodb.net/test?retryWrites=true&w=majority`;
+const url = `mongodb+srv://isa:${process.env.MONGO_PASS}@scrumpoker.smfdk.mongodb.net/test?retryWrites=true&w=majority`
 
 mongoose.connect(url, {
     useNewUrlParser: true,
